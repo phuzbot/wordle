@@ -75,6 +75,7 @@
             // exact match ignore
           } else {
             if (nonPositionMatched.includes(guess[i])) {
+              nonPositionMatched = nonPositionMatched.replace(guess[i], "");
               result[i] = "presenceMatch";
             }
           }
