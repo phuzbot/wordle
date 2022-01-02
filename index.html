@@ -11,6 +11,9 @@
       .noMatch {
         color: black;
       }
+      .noGuess {
+        color: darkgray;
+      }
     </style>
   </head>
   <body>
@@ -23,6 +26,13 @@
     ></div>
 
     <input id="guessInput" type="text" name="txt" value="" />
+    <div
+      id="keyboardContainer"
+      style="
+        font-family: 'Lucida Console', monospace;
+        text-transform: uppercase;
+      "
+    ></div>
     <div id="errorMessage"></div>
 
     <button type="button" onclick="submitGuess()">Submit Guess</button>
@@ -31,9 +41,11 @@
       const wordLength = 5;
 
       const word = "hello";
-      const letters1 = "qwertyuiop";
-      const letters2 = "asdfghjkl";
-      const letters3 = "zxcvbnm";
+      const keyboard = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
+
+      let positionMatchLetters = "";
+      let presenceMatchLetters = "";
+      let noMatchLetters = "";
 
       const guesses = [];
 
@@ -64,8 +76,10 @@
           result.push("noMatch");
         }
         for (let i = 0; i < wordLength; i++) {
+          noMatchLetters += guess[i];
           if (answer[i] == guess[i]) {
             result[i] = "positionMatch";
+            positionMatchLetters += answer[i];
           } else {
             nonPositionMatched += answer[i];
           }
@@ -73,11 +87,10 @@
         for (let i = 0; i < wordLength; i++) {
           if (answer[i] == guess[i]) {
             // exact match ignore
-          } else {
-            if (nonPositionMatched.includes(guess[i])) {
-              nonPositionMatched = nonPositionMatched.replace(guess[i], "");
-              result[i] = "presenceMatch";
-            }
+          } else if (nonPositionMatched.includes(guess[i])) {
+            nonPositionMatched = nonPositionMatched.replace(guess[i], "");
+            result[i] = "presenceMatch";
+            presenceMatchLetters += guess[i];
           }
         }
         return result;
@@ -86,6 +99,9 @@
       function showGuesses() {
         const guessContainer = document.getElementById("guessContainer");
         guessContainer.innerHTML = "";
+        positionMatchLetters = "";
+        presenceMatchLetters = "";
+        noMatchLetters = "";
         for (let i = 0; i < guesses.length; i++) {
           const guess = guesses[i];
           const matches = getMatches(word, guess);
@@ -96,6 +112,32 @@
             characterElement.innerHTML = guess[j];
             characterElement.classList.add(matches[j]);
             wordElement.appendChild(characterElement);
+          }
+        }
+        const keyboardContainer = document.getElementById("keyboardContainer");
+        keyboardContainer.innerHTML = "";
+        for (let rowIndex = 0; rowIndex < keyboard.length; rowIndex++) {
+          let keyboardRow = keyboard[rowIndex];
+          const keyboardRowElement = document.createElement("p");
+          keyboardContainer.appendChild(keyboardRowElement);
+          for (
+            let characterIndex = 0;
+            characterIndex < keyboardRow.length;
+            characterIndex++
+          ) {
+            const keyElement = document.createElement("span");
+            const characterValue = keyboardRow[characterIndex];
+            keyElement.innerHTML = characterValue;
+            if (positionMatchLetters.includes(characterValue)) {
+              keyElement.classList.add("positionMatch");
+            } else if (presenceMatchLetters.includes(characterValue)) {
+              keyElement.classList.add("presenceMatch");
+            } else if (noMatchLetters.includes(characterValue)) {
+              keyElement.classList.add("noMatch");
+            } else {
+              keyElement.classList.add("noGuess");
+            }
+            keyboardRowElement.appendChild(keyElement);
           }
         }
       }
