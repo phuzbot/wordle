@@ -40,6 +40,16 @@
         document.getElementById("demo").innerHTML = "Hello JavaScript!";
       }
 
+      function httpGetAsync(theUrl, callback) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+        };
+        xmlHttp.open("GET", theUrl, true); // true for asynchronous
+        xmlHttp.send(null);
+      }
+
       /**
        * @param {string} answer
        * @param {string} guess
@@ -97,6 +107,13 @@
         guesses.push(newGuess);
         showGuesses();
       }
+
+      async function main() {
+        httpGetAsync("/words", (v) => {
+          console.log(v);
+        });
+      }
+      main();
     </script>
   </body>
 </html>
