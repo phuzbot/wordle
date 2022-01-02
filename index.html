@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .positionMatch {
+        color: green;
+      }
+      .presenceMatch {
+        color: orange;
+      }
+      .noMatch {
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="guessContainer"
+      style="
+        font-family: 'Lucida Console', monospace;
+        text-transform: uppercase;
+      "
+    ></div>
+
+    <input id="guessInput" type="text" name="txt" value="" />
+    <div id="errorMessage"></div>
+
+    <button type="button" onclick="submitGuess()">Submit Guess</button>
+
+    <script>
+      const wordLength = 5;
+
+      const word = "hello";
+
+      const guesses = ["colde", "meuno"];
+
+      const allWords = ["saabe", "volvo", "bmwee"];
+
+      function myFunction() {
+        document.getElementById("demo").innerHTML = "Hello JavaScript!";
+      }
+
+      /**
+       * @param {string} answer
+       * @param {string} guess
+       */
+      function getMatches(answer, guess) {
+        const result = [];
+        for (let i = 0; i < wordLength; i++) {
+          result.push("noMatch");
+        }
+        for (let i = 0; i < wordLength; i++) {
+          if (answer.includes(guess[i])) {
+            result[i] = "presenceMatch";
+          }
+        }
+        for (let i = 0; i < wordLength; i++) {
+          if (answer[i] == guess[i]) {
+            result[i] = "positionMatch";
+          }
+        }
+        return result;
+      }
+
+      function showGuesses() {
+        const guessContainer = document.getElementById("guessContainer");
+        guessContainer.innerHTML = "";
+        for (let i = 0; i < guesses.length; i++) {
+          const guess = guesses[i];
+          const matches = getMatches(word, guess);
+          const wordElement = document.createElement("p");
+          guessContainer.appendChild(wordElement);
+          for (let j = 0; j < wordLength; j++) {
+            const characterElement = document.createElement("span");
+            characterElement.innerHTML = guess[j];
+            characterElement.classList.add(matches[j]);
+            wordElement.appendChild(characterElement);
+          }
+        }
+      }
+
+      /**
+       * @param {string} newGuess
+       */
+      function submitGuess() {
+        const newGuess = document
+          .getElementById("guessInput")
+          .value.toLowerCase();
+        console.log(newGuess);
+        if (!allWords.includes(newGuess)) {
+          console.log("does not include");
+          document.getElementById("guessInput").value = "";
+          const errorMessage = document.getElementById("errorMessage");
+          errorMessage.innerHTML = newGuess + " is not a word";
+          return;
+        }
+        guesses.push(newGuess);
+        showGuesses();
+      }
+    </script>
+  </body>
+</html>
