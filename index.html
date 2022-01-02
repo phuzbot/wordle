@@ -31,10 +31,13 @@
       const wordLength = 5;
 
       const word = "hello";
+      const letters1 = "qwertyuiop";
+      const letters2 = "asdfghjkl";
+      const letters3 = "zxcvbnm";
 
-      const guesses = ["colde", "meuno"];
+      const guesses = [];
 
-      const allWords = ["saabe", "volvo", "bmwee"];
+      let allWords = [];
 
       function myFunction() {
         document.getElementById("demo").innerHTML = "Hello JavaScript!";
@@ -56,17 +59,24 @@
        */
       function getMatches(answer, guess) {
         const result = [];
+        let nonPositionMatched = "";
         for (let i = 0; i < wordLength; i++) {
           result.push("noMatch");
         }
         for (let i = 0; i < wordLength; i++) {
-          if (answer.includes(guess[i])) {
-            result[i] = "presenceMatch";
+          if (answer[i] == guess[i]) {
+            result[i] = "positionMatch";
+          } else {
+            nonPositionMatched += answer[i];
           }
         }
         for (let i = 0; i < wordLength; i++) {
           if (answer[i] == guess[i]) {
-            result[i] = "positionMatch";
+            // exact match ignore
+          } else {
+            if (nonPositionMatched.includes(guess[i])) {
+              result[i] = "presenceMatch";
+            }
           }
         }
         return result;
@@ -96,10 +106,8 @@
         const newGuess = document
           .getElementById("guessInput")
           .value.toLowerCase();
-        console.log(newGuess);
+        document.getElementById("guessInput").value = "";
         if (!allWords.includes(newGuess)) {
-          console.log("does not include");
-          document.getElementById("guessInput").value = "";
           const errorMessage = document.getElementById("errorMessage");
           errorMessage.innerHTML = newGuess + " is not a word";
           return;
@@ -109,8 +117,8 @@
       }
 
       async function main() {
-        httpGetAsync("/words", (v) => {
-          console.log(v);
+        httpGetAsync("/words", (/** @type {string} */ v) => {
+          allWords = v.split("\n");
         });
       }
       main();
