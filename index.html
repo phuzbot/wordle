@@ -12,7 +12,7 @@
         color: black;
       }
       .noGuess {
-        color: darkgray;
+        color: gray;
       }
     </style>
   </head>
@@ -37,22 +37,53 @@
 
     <button type="button" onclick="submitGuess()">Submit Guess</button>
 
+    <br />
+    <br />
+    <div>Code: <input id="wordCode" type="text" name="txt" value="0" /></div>
+    <button type="button" onclick="nextWord()">Next Word</button>
     <script>
       const wordLength = 5;
 
-      const word = "hello";
+      let word = "hello";
       const keyboard = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
 
       let positionMatchLetters = "";
       let presenceMatchLetters = "";
       let noMatchLetters = "";
 
-      const guesses = [];
+      let guesses = [];
 
       let allWords = [];
 
-      function myFunction() {
-        document.getElementById("demo").innerHTML = "Hello JavaScript!";
+      var m_w = 123456789;
+      var m_z = 987654321;
+      var mask = 0xffffffff;
+
+      function seed(i) {
+        m_w = (123456789 + i) & mask;
+        m_z = (987654321 - i) & mask;
+      }
+
+      function random() {
+        m_z = (36969 * (m_z & 65535) + (m_z >> 16)) & mask;
+        m_w = (18000 * (m_w & 65535) + (m_w >> 16)) & mask;
+        var result = ((m_z << 16) + (m_w & 65535)) >>> 0;
+        result /= 4294967296;
+        return result;
+      }
+
+      function shuffle(array) {
+        let currentIndex = array.length,
+          randomIndex;
+        while (currentIndex != 0) {
+          randomIndex = Math.floor(random() * currentIndex);
+          currentIndex--;
+          [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex],
+            array[currentIndex],
+          ];
+        }
+        return array;
       }
 
       function httpGetAsync(theUrl, callback) {
@@ -159,9 +190,25 @@
         showGuesses();
       }
 
+      function nextWord() {
+        const wordIndex =
+          1 + parseInt(document.getElementById("wordCode").value);
+        word = allWords[wordIndex];
+        document.getElementById("wordCode").value = wordIndex;
+        document.getElementById("guessInput").value = "";
+        guesses = [];
+        showGuesses();
+      }
+
       async function main() {
         httpGetAsync("/words", (/** @type {string} */ v) => {
-          allWords = v.split("\n");
+          let unshuffledAllWords = v.split("\n");
+          allWordsLength = allWords.length;
+          seed(12345);
+          allWords = shuffle(unshuffledAllWords);
+          const wordIndex = document.getElementById("wordCode").value;
+          word = allWords[wordIndex];
+          showGuesses();
         });
       }
 
