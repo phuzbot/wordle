@@ -201,7 +201,7 @@
       }
 
       async function main() {
-        httpGetAsync("/words", (/** @type {string} */ v) => {
+        httpGetAsync("words", (/** @type {string} */ v) => {
           let unshuffledAllWords = v.split("\n");
           allWordsLength = allWords.length;
           seed(12345);
